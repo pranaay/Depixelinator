@@ -6,7 +6,7 @@
 #include <unistd.h>
 
 // GLobal variables
-int width = 1060, height = 1060;
+int width = 680, height = 680;
 
 
 int main(int, char *argv[]) {

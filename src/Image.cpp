@@ -30,6 +30,28 @@ Image::Image(const char *filename, unsigned int slot){
     }
     for(int i=0; i<m_Height; i++){
         for(int j=0; j<m_Width; j++){
+            if(i == 0){
+                m_img[i][j].top = false;
+                m_img[i][j].topright = false;
+                m_img[i][j].topleft = false;
+            }
+            if(j == 0){
+                m_img[i][j].left = false;
+                m_img[i][j].topleft = false;
+                m_img[i][j].bottomleft = false;
+            }
+            if( i == m_Height-1){
+                m_img[i][j].bottom = false;
+                m_img[i][j].bottomleft = false;
+                m_img[i][j].bottomright = false;
+            }
+            if( j == m_Width - 1){
+                m_img[i][j].right = false;
+                m_img[i][j].topright = false;
+                m_img[i][j].bottomright = false;
+            }
+
+
             m_img[i][j].setRGB((short)m_Buffer[i*m_Width*3 + 3*j],
                                 (short)m_Buffer[i*m_Width*3 + 3*j+1],
                                 (short)m_Buffer[i*m_Width*3 + 3*j+2]

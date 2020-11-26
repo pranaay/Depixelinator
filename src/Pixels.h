@@ -16,7 +16,14 @@ public:
     unsigned short getR();
     unsigned short getG();
     unsigned short getB();
-
+    bool top;
+    bool bottom;
+    bool left;
+    bool right;
+    bool topleft;
+    bool topright;
+    bool bottomleft;
+    bool bottomright;
     void setRGB(unsigned short r,unsigned short g, unsigned short b);
 
 };
