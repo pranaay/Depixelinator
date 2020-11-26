@@ -21,6 +21,8 @@ public:
 
     bool isSimilar(Pixels A, Pixels B);
 
+    void createSimilarityGraph();
+
 private:
     int m_Height;
     int m_Width;

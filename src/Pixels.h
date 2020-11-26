@@ -5,6 +5,8 @@
 #ifndef PROJECT_PIXELS_H
 #define PROJECT_PIXELS_H
 
+#include <map>
+
 class Pixels {
 private:
     unsigned short R;
@@ -21,16 +23,11 @@ public:
 
     unsigned short getB();
 
-    bool top;
-    bool bottom;
-    bool left;
-    bool right;
-    bool topleft;
-    bool topright;
-    bool bottomleft;
-    bool bottomright;
+    std::map<std::string, bool> adjacencyList;
 
     void setRGB(unsigned short r, unsigned short g, unsigned short b);
+
+    void setR(unsigned short r);
 
 };
 

@@ -11,14 +11,16 @@ void Pixels::setRGB(unsigned short r, unsigned short g, unsigned short b) {
 }
 
 Pixels::Pixels() {
-    top = true;
-    topleft = true;
-    topright = true;
-    bottom = true;
-    bottomleft = true;
-    bottomright = true;
-    right = true;
-    left = true;
+
+    adjacencyList.insert(std::pair<std::string, bool>("top", true));
+    adjacencyList.insert(std::pair<std::string, bool>("topLeft", true));
+    adjacencyList.insert(std::pair<std::string, bool>("topRight", true));
+    adjacencyList.insert(std::pair<std::string, bool>("bottom", true));
+    adjacencyList.insert(std::pair<std::string, bool>("bottomLeft", true));
+    adjacencyList.insert(std::pair<std::string, bool>("bottomRight", true));
+    adjacencyList.insert(std::pair<std::string, bool>("right", true));
+    adjacencyList.insert(std::pair<std::string, bool>("left", true));
+
 }
 
 unsigned short Pixels::getR() {
@@ -31,4 +33,8 @@ unsigned short Pixels::getG() {
 
 unsigned short Pixels::getB() {
     return B;
+}
+
+void Pixels::setR(unsigned short r) {
+    R = r;
 }

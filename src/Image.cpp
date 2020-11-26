@@ -29,29 +29,29 @@ Image::Image(const char *filename, unsigned int slot) {
     m_img = new Pixels *[m_Height];
     for (int i = 0; i < m_Height; i++) {
         m_img[i] = new Pixels[m_Width];
-        // memset(m_img[i], (int)NULL, m_Height*sizeof(Pixels));
+
     }
     for (int i = 0; i < m_Height; i++) {
         for (int j = 0; j < m_Width; j++) {
             if (i == 0) {
-                m_img[i][j].top = false;
-                m_img[i][j].topright = false;
-                m_img[i][j].topleft = false;
+                m_img[i][j].adjacencyList.find("top")->second = false;
+                m_img[i][j].adjacencyList.find("topRight")->second = false;
+                m_img[i][j].adjacencyList.find("topLeft")->second = false;
             }
             if (j == 0) {
-                m_img[i][j].left = false;
-                m_img[i][j].topleft = false;
-                m_img[i][j].bottomleft = false;
+                m_img[i][j].adjacencyList.find("left")->second = false;
+                m_img[i][j].adjacencyList.find("bottomLeft")->second = false;
+                m_img[i][j].adjacencyList.find("topLeft")->second = false;
             }
             if (i == m_Height - 1) {
-                m_img[i][j].bottom = false;
-                m_img[i][j].bottomleft = false;
-                m_img[i][j].bottomright = false;
+                m_img[i][j].adjacencyList.find("bottom")->second = false;
+                m_img[i][j].adjacencyList.find("bottomRight")->second = false;
+                m_img[i][j].adjacencyList.find("bottomLeft")->second = false;
             }
             if (j == m_Width - 1) {
-                m_img[i][j].right = false;
-                m_img[i][j].topright = false;
-                m_img[i][j].bottomright = false;
+                m_img[i][j].adjacencyList.find("right")->second = false;
+                m_img[i][j].adjacencyList.find("topRight")->second = false;
+                m_img[i][j].adjacencyList.find("bottomRight")->second = false;
             }
 
 
@@ -119,4 +119,39 @@ bool Image::isSimilar(Pixels A, Pixels B) {
     }
 
     return true;
+}
+
+void Image::createSimilarityGraph() {
+    for (int i = 0; i < m_Height; i++) {
+        for (int j = 0; j < m_Width; j++) {
+            if (m_img[i][j].adjacencyList.find("top")->second && !isSimilar(m_img[i][j], m_img[i - 1][j])) {
+                m_img[i][j].adjacencyList.find("top")->second = false;
+            }
+
+            if (m_img[i][j].adjacencyList.find("topRight")->second && !isSimilar(m_img[i][j], m_img[i - 1][j + 1])) {
+                m_img[i][j].adjacencyList.find("topRight")->second = false;
+            }
+            if (m_img[i][j].adjacencyList.find("topLeft")->second && !isSimilar(m_img[i][j], m_img[i - 1][j - 1])) {
+                m_img[i][j].adjacencyList.find("topLeft")->second = false;
+            }
+            if (m_img[i][j].adjacencyList.find("bottom")->second && !isSimilar(m_img[i][j], m_img[i + 1][j])) {
+                m_img[i][j].adjacencyList.find("bottom")->second = false;
+            }
+            if (m_img[i][j].adjacencyList.find("bottomLeft")->second && !isSimilar(m_img[i][j], m_img[i + 1][j - 1])) {
+                m_img[i][j].adjacencyList.find("bottomLeft")->second = false;
+            }
+            if (m_img[i][j].adjacencyList.find("bottomRight")->second && !isSimilar(m_img[i][j], m_img[i + 1][j + 1])) {
+                m_img[i][j].adjacencyList.find("bottomRight")->second = false;
+            }
+            if (m_img[i][j].adjacencyList.find("left")->second && !isSimilar(m_img[i][j], m_img[i][j - 1])) {
+                m_img[i][j].adjacencyList.find("left")->second = false;
+            }
+            if (m_img[i][j].adjacencyList.find("right")->second && !isSimilar(m_img[i][j], m_img[i][j + 1])) {
+                m_img[i][j].adjacencyList.find("right")->second = false;
+            }
+
+        }
+    }
+
+
 }
