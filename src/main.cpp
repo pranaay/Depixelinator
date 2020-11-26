@@ -21,13 +21,19 @@ int main(int, char *argv[]) {
     Image pepe = Image("./PixelArtImages/smw2_yoshi_01_input.png", 0);
     std::cout << "height : " << pepe.getHeight() << " width : " << pepe.getWidth() << std::endl;
     glBindTexture(GL_TEXTURE_2D, pepe.getTexId());
+    Pixels A = Pixels();
+    A.setRGB((short) 255, (short) 255, (short) 255);
+    Pixels B = Pixels();
+    B.setRGB((short) 0, (short) 0, (short) 0);
+
+    std::cout << pepe.isSimilar(A, B) << std::endl;
 
     // Create VBOs, VAOs
     const GLfloat vertexdata[] = {
             -0.5f, -0.5f, 0.0f, 0.0f,
-            0.5f, -0.5f,  1.0f, 0.0f,
-            -0.5f, 0.5f,  0.0f, 1.0f,
-            0.5f, 0.5f,  1.0f, 1.0f
+            0.5f, -0.5f, 1.0f, 0.0f,
+            -0.5f, 0.5f, 0.0f, 1.0f,
+            0.5f, 0.5f, 1.0f, 1.0f
     };
 
     unsigned int indices[] = {
@@ -40,7 +46,7 @@ int main(int, char *argv[]) {
     unsigned int ibo;
     glGenBuffers(1, &ibo);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, 6*sizeof(int), indices, GL_STATIC_DRAW);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, 6 * sizeof(int), indices, GL_STATIC_DRAW);
     unsigned int graphPoints;
     glGenBuffers(1, &graphPoints);
     glBindBuffer(GL_ARRAY_BUFFER, graphPoints);
@@ -78,12 +84,12 @@ int main(int, char *argv[]) {
 
         glUseProgram(shaderProgram);
 
-        int location =  glGetUniformLocation(shaderProgram,"u_Texture");
+        int location = glGetUniformLocation(shaderProgram, "u_Texture");
         glUniform1i(location, 0);
 
 
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
-        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, (void *)0);
+        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, (void *) 0);
 
         glUseProgram(0);
 
