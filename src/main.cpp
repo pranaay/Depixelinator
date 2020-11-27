@@ -6,7 +6,7 @@
 #include <unistd.h>
 
 // GLobal variables
-int width = 680, height = 680;
+int width = 1060, height = 1060;
 
 
 int main(int, char *argv[]) {
@@ -21,12 +21,9 @@ int main(int, char *argv[]) {
     Image pepe = Image("./PixelArtImages/smw2_yoshi_01_input.png", 0);
     std::cout << "height : " << pepe.getHeight() << " width : " << pepe.getWidth() << std::endl;
     glBindTexture(GL_TEXTURE_2D, pepe.getTexId());
-    Pixels A = Pixels();
-    A.setRGB((short) 255, (short) 255, (short) 255);
-    Pixels B = Pixels();
-    B.setRGB((short) 0, (short) 0, (short) 0);
-
-    std::cout << pepe.isSimilar(A, B) << std::endl;
+    pepe.createSimilarityGraph();
+    pepe.createVbo();
+    pepe.createIbo();
 
     // Create VBOs, VAOs
     const GLfloat vertexdata[] = {
@@ -86,10 +83,13 @@ int main(int, char *argv[]) {
 
         int location = glGetUniformLocation(shaderProgram, "u_Texture");
         glUniform1i(location, 0);
+        glBindBuffer(GL_ARRAY_BUFFER, pepe.getVbo());
+        glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, sizeof(float) * 2, (void *) 0);
+        glEnableVertexAttribArray(0);
+        glDrawArrays(GL_POINTS, 0, pepe.getHeight() * pepe.getWidth() * 2);
 
-
-        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
-        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, (void *) 0);
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, pepe.getIbo());
+        glDrawElements(GL_LINES, pepe.getNumConn(), GL_UNSIGNED_INT, (void *) 0);
 
         glUseProgram(0);
 

@@ -23,6 +23,22 @@ public:
 
     void createSimilarityGraph();
 
+    unsigned int getVbo() const;
+
+    void setVbo(unsigned int vbo);
+
+    unsigned int getIbo() const;
+
+    void setIbo(unsigned int ibo);
+
+    void createVbo();
+
+    void createIbo();
+
+    int getNumConn() const;
+
+    void setNumConn(int numConn);
+
 private:
     int m_Height;
     int m_Width;
@@ -30,6 +46,10 @@ private:
     unsigned int m_texId;
     unsigned char *m_Buffer;
     Pixels **m_img;
+    unsigned int VBO;
+    unsigned int IBO;
+    int numConn;
+
 
 };
 

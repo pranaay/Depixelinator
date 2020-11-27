@@ -5,12 +5,12 @@
 #include <math.h>
 #include "stb_image.h"
 #include "Pixels.h"
-
+#include <vector>
 
 #include<iostream>
 
 Image::Image(const char *filename, unsigned int slot) {
-    stbi_set_flip_vertically_on_load(0);
+    stbi_set_flip_vertically_on_load(1);
     m_Buffer = stbi_load(filename, &m_Width, &m_Height, &m_BPP, 3);
     glGenTextures(1, &m_texId);
     glActiveTexture(GL_TEXTURE0 + slot);
@@ -82,6 +82,8 @@ unsigned char *Image::getBuffer() {
 }
 
 Image::~Image() {
+    glDeleteBuffers(1,&VBO);
+    glDeleteBuffers(1,&IBO);
     glDeleteTextures(1, &m_texId);
     if (m_Buffer)
         stbi_image_free(m_Buffer);
@@ -155,3 +157,88 @@ void Image::createSimilarityGraph() {
 
 
 }
+
+unsigned int Image::getVbo() const {
+    return VBO;
+}
+
+void Image::setVbo(unsigned int vbo) {
+    VBO = vbo;
+}
+
+unsigned int Image::getIbo() const {
+    return IBO;
+}
+
+void Image::setIbo(unsigned int ibo) {
+    IBO = ibo;
+}
+
+void Image::createVbo() {
+    float vertexData[2 * m_Width * m_Height] = {0};
+    for (int i = 0; i < m_Height; i++) {
+        for (int j = 0; j < m_Width; j++) {
+            vertexData[i * m_Width * 2 + j * 2] = 0.75 - (1.5 / m_Width) * j;
+            vertexData[i * m_Width * 2 + j * 2 + 1] = -0.75 + (1.5 / m_Height) * i;
+        }
+    }
+    glGenBuffers(1, &VBO);
+    glBindBuffer(GL_ARRAY_BUFFER, VBO);
+    glBufferData(GL_ARRAY_BUFFER, 2 * m_Width * m_Height * sizeof(float), vertexData, GL_STATIC_DRAW);
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+    //glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, sizeof(float) * 4, (void *) 0);
+}
+
+void Image::createIbo() {
+    std::vector<unsigned int> indices;
+    for (int i = 0; i < m_Height; i++) {
+        for (int j = 0; j < m_Width; j++) {
+            if (m_img[i][j].adjacencyList.find("top")->second) {
+                indices.push_back(i * m_Width + j);
+                indices.push_back((i - 1) * m_Width + j);
+            }
+            if (m_img[i][j].adjacencyList.find("topRight")->second) {
+                indices.push_back(i * m_Width + j);
+                indices.push_back((i - 1) * m_Width + j + 1);
+            }
+            if (m_img[i][j].adjacencyList.find("topLeft")->second) {
+                indices.push_back(i * m_Width + j);
+                indices.push_back((i - 1) * m_Width + j - 1);
+            }
+            if (m_img[i][j].adjacencyList.find("bottom")->second) {
+                indices.push_back(i * m_Width + j);
+                indices.push_back((i + 1) * m_Width + j);
+            }
+            if (m_img[i][j].adjacencyList.find("bottomRight")->second) {
+                indices.push_back(i * m_Width + j);
+                indices.push_back((i + 1) * m_Width + j + 1);
+            }
+            if (m_img[i][j].adjacencyList.find("bottomLeft")->second) {
+                indices.push_back(i * m_Width + j);
+                indices.push_back((i + 1) * m_Width + j - 1);
+            }
+            if (m_img[i][j].adjacencyList.find("right")->second) {
+                indices.push_back(i * m_Width + j);
+                indices.push_back((i) * m_Width + j + 1);
+            }
+            if (m_img[i][j].adjacencyList.find("left")->second) {
+                indices.push_back(i * m_Width + j);
+                indices.push_back((i) * m_Width + j - 1);
+            }
+        }
+    }
+    numConn = indices.size();
+    glGenBuffers(1, &IBO);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, IBO);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(int), &indices[0], GL_STATIC_DRAW);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+}
+
+int Image::getNumConn() const {
+    return numConn;
+}
+
+void Image::setNumConn(int numConn) {
+    Image::numConn = numConn;
+}
+

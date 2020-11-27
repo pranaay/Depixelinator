@@ -12,6 +12,8 @@ private:
     unsigned short R;
     unsigned short G;
     unsigned short B;
+    float x;
+    float y;
 
 public:
     //Pixel(unsigned short r,unsigned short g,unsigned short b);
@@ -27,7 +29,13 @@ public:
 
     void setRGB(unsigned short r, unsigned short g, unsigned short b);
 
-    void setR(unsigned short r);
+    float getX() const;
+
+    void setX(float x);
+
+    float getY() const;
+
+    void setY(float y);
 
 };
 

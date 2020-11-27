@@ -35,6 +35,19 @@ unsigned short Pixels::getB() {
     return B;
 }
 
-void Pixels::setR(unsigned short r) {
-    R = r;
+
+float Pixels::getX() const {
+    return x;
+}
+
+void Pixels::setX(float x) {
+    Pixels::x = x;
+}
+
+float Pixels::getY() const {
+    return y;
+}
+
+void Pixels::setY(float y) {
+    Pixels::y = y;
 }
