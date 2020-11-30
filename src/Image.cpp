@@ -82,8 +82,8 @@ unsigned char *Image::getBuffer() {
 }
 
 Image::~Image() {
-    glDeleteBuffers(1,&VBO);
-    glDeleteBuffers(1,&IBO);
+    glDeleteBuffers(1, &VBO);
+    glDeleteBuffers(1, &IBO);
     glDeleteTextures(1, &m_texId);
     if (m_Buffer)
         stbi_image_free(m_Buffer);
@@ -178,8 +178,8 @@ void Image::createVbo() {
     float vertexData[2 * m_Width * m_Height] = {0};
     for (int i = 0; i < m_Height; i++) {
         for (int j = 0; j < m_Width; j++) {
-            vertexData[i * m_Width * 2 + j * 2] = 0.75 - (1.5 / m_Width) * j;
-            vertexData[i * m_Width * 2 + j * 2 + 1] = -0.75 + (1.5 / m_Height) * i;
+            vertexData[i * m_Width * 2 + j * 2] = (-0.85 + (1.7 / m_Height) * j);
+            vertexData[i * m_Width * 2 + j * 2 + 1] = -0.85 + (1.7 / m_Height) * i;
         }
     }
     glGenBuffers(1, &VBO);
