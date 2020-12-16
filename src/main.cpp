@@ -7,7 +7,7 @@
 
 // GLobal variables
 int width = 720, height = 720;
-
+//TODO : In shader file position vector is given multiplying it with x constant will give zoom functionality. Can be controlled using the scroll wheel and IMGUI.
 
 int main(int, char *argv[]) {
     GLFWwindow *window = setupWindow(width, height);
@@ -22,6 +22,7 @@ int main(int, char *argv[]) {
     std::cout << "height : " << pepe.getHeight() << " width : " << pepe.getWidth() << std::endl;
     glBindTexture(GL_TEXTURE_2D, pepe.getTexId());
     pepe.createSimilarityGraph();
+    pepe.hueristicsTaversal();
     pepe.createVbo();
     pepe.createIbo();
 

@@ -39,6 +39,16 @@ public:
 
     void setNumConn(int numConn);
 
+    void hueristicsTaversal();
+
+    int lenCurve(int x, int y);
+
+    int mappingX(std::string x);
+
+    int mappingY(std::string x);
+
+    void resetVisited();
+
 private:
     int m_Height;
     int m_Width;
@@ -49,6 +59,7 @@ private:
     unsigned int VBO;
     unsigned int IBO;
     int numConn;
+    int **visited;
 
 
 };

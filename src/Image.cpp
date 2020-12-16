@@ -6,6 +6,7 @@
 #include "stb_image.h"
 #include "Pixels.h"
 #include <vector>
+#include<bits/stdc++.h>
 
 #include<iostream>
 
@@ -178,8 +179,8 @@ void Image::createVbo() {
     float vertexData[2 * m_Width * m_Height] = {0};
     for (int i = 0; i < m_Height; i++) {
         for (int j = 0; j < m_Width; j++) {
-            vertexData[i * m_Width * 2 + j * 2] = (-0.85 + (1.7 / m_Height) * j);
-            vertexData[i * m_Width * 2 + j * 2 + 1] = -0.85 + (1.7 / m_Height) * i;
+            vertexData[i * m_Width * 2 + j * 2] = (-0.85 + (1.7 / std::max(m_Height, m_Width)) * j);
+            vertexData[i * m_Width * 2 + j * 2 + 1] = -0.85 + (1.7 / std::max(m_Height, m_Width)) * i;
         }
     }
     glGenBuffers(1, &VBO);
@@ -242,3 +243,98 @@ void Image::setNumConn(int numConn) {
     Image::numConn = numConn;
 }
 
+void Image::hueristicsTaversal() {
+
+    for (int i = 0; i <= m_Height - 1; i++) {
+        for (int j = 0; j < m_Width - 1; j++) {
+            if (m_img[i][j].adjacencyList.find("bottomRight")->second &&
+                m_img[i + 1][j].adjacencyList.find("topRight")->second &&
+                !m_img[i][j].adjacencyList.find("bottom")->second &&
+                !m_img[i][j].adjacencyList.find("right")->second &&
+                !m_img[i + 1][j].adjacencyList.find("right")->second &&
+                !m_img[i][j + 1].adjacencyList.find("bottom")->second) {
+                std::cerr << "working here" << i << " " << j << std::endl;
+                int w_lr = 0, w_rl = 0;
+                //Curves heuristic
+
+                resetVisited();
+                int len_lr = lenCurve(i, j);
+                std::cerr << len_lr << " len_lr ";
+                resetVisited();
+                int len_rl = lenCurve(i + 1, j );
+                std::cerr << len_rl << " len_rl" << std::endl;
+                if (len_lr > len_rl) {
+                    w_lr = len_lr - len_rl;
+                    w_rl = 0;
+                } else if (len_lr < len_rl) {
+                    w_rl = len_rl - len_lr;
+                    w_lr = 0;
+                } else {
+                    w_lr = 0;
+                    w_rl = 0;
+                }
+
+                //TODO: sparse hueristics
+                //TODO: island hueristics
+                if (w_lr > w_rl) {
+                    m_img[i + 1][j].adjacencyList.find("topRight")->second = false;
+                    m_img[i][j + 1].adjacencyList.find("bottomLeft")->second = false;
+                } else if (w_lr < w_rl) {
+                    m_img[i][j].adjacencyList.find("bottomRight")->second = false;
+                    m_img[i + 1][j + 1].adjacencyList.find("topLeft")->second = false;
+                } else {
+                    m_img[i][j].adjacencyList.find("bottomRight")->second = false;
+                    m_img[i + 1][j + 1].adjacencyList.find("topLeft")->second = false;
+                    m_img[i + 1][j].adjacencyList.find("topRight")->second = false;
+                    m_img[i][j + 1].adjacencyList.find("bottomLeft")->second = false;
+
+                }
+            }
+        }
+    }
+
+}
+
+int Image::lenCurve(int x, int y) {
+    if (x >= m_Height || y >= m_Width) return -1;
+    if (visited[x][y] == 1) return -1;
+    visited[x][y] = 1;
+    if (m_img[x][y].valency() != 2) {
+        return 0;
+    } else {
+        std::vector <std::string> l = m_img[x][y].getList();
+                return (lenCurve(x + mappingX(l[0]), y + mappingY(l[0])) +
+                lenCurve(x + mappingX(l[1]), y + mappingY(l[1])) + 2);
+    }
+
+}
+
+int Image::mappingX(std::string x) {
+    if (x == "topRight") return -1;
+    if (x == "topLeft") return -1;
+    if (x == "top") return -1;
+    if (x == "right") return 0;
+    if (x == "left") return 0;
+    if (x == "bottomRight") return 1;
+    if (x == "bottomLeft") return 1;
+    if (x == "bottom") return 1;
+}
+
+int Image::mappingY(std::string x) {
+    if (x == "topRight") return 1;
+    if (x == "topLeft") return -1;
+    if (x == "top") return 0;
+    if (x == "right") return 1;
+    if (x == "left") return -1;
+    if (x == "bottomRight") return 1;
+    if (x == "bottomLeft") return -1;
+    if (x == "bottom") return 0;
+}
+
+void Image::resetVisited() {
+    visited = new int *[m_Height];
+    for (int ii = 0; ii < m_Height; ii++) {
+        visited[ii] = new int[m_Width];
+        memset(visited[ii], 0, m_Width * sizeof(int));
+    }
+}

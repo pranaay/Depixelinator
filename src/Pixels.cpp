@@ -51,3 +51,23 @@ float Pixels::getY() const {
 void Pixels::setY(float y) {
     Pixels::y = y;
 }
+
+int Pixels::valency() {
+    int sum = 0;
+    std::map<std::string, bool>::iterator itr = adjacencyList.begin();
+    while (itr != adjacencyList.end()) {
+        if (itr->second) sum++;
+        itr++;
+    }
+    return sum;
+}
+
+std::vector<std::string> Pixels::getList() {
+    std::map<std::string, bool>::iterator itr = adjacencyList.begin();
+    std::vector<std::string> rett;
+    while (itr != adjacencyList.end()){
+        if(itr-> second) rett.push_back(itr->first);
+        itr++;
+    }
+    return rett;
+}

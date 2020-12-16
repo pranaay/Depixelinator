@@ -6,6 +6,8 @@
 #define PROJECT_PIXELS_H
 
 #include <map>
+#include <iterator>
+#include <vector>
 
 class Pixels {
 private:
@@ -36,6 +38,10 @@ public:
     float getY() const;
 
     void setY(float y);
+
+    int valency();
+
+    std::vector <std::string> getList();
 
 };
 
