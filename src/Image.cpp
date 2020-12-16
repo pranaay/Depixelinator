@@ -261,7 +261,7 @@ void Image::hueristicsTaversal() {
                 int len_lr = lenCurve(i, j);
                 std::cerr << len_lr << " len_lr ";
                 resetVisited();
-                int len_rl = lenCurve(i + 1, j );
+                int len_rl = lenCurve(i + 1, j);
                 std::cerr << len_rl << " len_rl" << std::endl;
                 if (len_lr > len_rl) {
                     w_lr = len_lr - len_rl;
@@ -274,8 +274,52 @@ void Image::hueristicsTaversal() {
                     w_rl = 0;
                 }
 
-                //TODO: sparse hueristics
-                //TODO: island hueristics
+                //sparse heuristics
+                int top = 0, bottom = 0;
+                int l = 0, r = 0;
+                int t = 0, b = 0;
+                if (i - 4 < 0) {
+                    t = 0;
+                    b = i + 4 - (i - 4);
+                } else if (i + 4 >= m_Height) {
+                    b = m_Height - 1;
+                    t = i - 4 + (m_Height - (i + 4));
+                } else {
+                    t = i - 4;
+                    b = i + 4;
+                }
+                if (j - 4 < 0) {
+                    l = 0;
+                    r = j + 4 - (j - 4);
+                } else if (j + 4 >= m_Width) {
+                    r = m_Width - 1;
+                    l = j - 4 + (m_Width - (j + 4));
+                } else {
+                    l = j - 4;
+                    r = j + 4;
+                }
+                for (int ii = t; ii < b; ii++) {
+                    for (int jj = l; jj < r; jj++) {
+                        if (isSimilar(m_img[i][j], m_img[ii][jj])) {
+                            top++;
+                        }
+                        if (isSimilar(m_img[i + 1][j], m_img[ii][jj])) {
+                            bottom++;
+                        }
+                    }
+                }
+                if (top > bottom) {
+                    w_rl += top - bottom;
+                    w_lr += 0;
+                } else if (bottom < top) {
+                    w_lr += bottom - top;
+                    w_rl += 0;
+                } else {
+                    w_lr += 0;
+                    w_rl += 0;
+                }
+                //TODO: island heuristics
+
                 if (w_lr > w_rl) {
                     m_img[i + 1][j].adjacencyList.find("topRight")->second = false;
                     m_img[i][j + 1].adjacencyList.find("bottomLeft")->second = false;
@@ -303,7 +347,7 @@ int Image::lenCurve(int x, int y) {
         return 0;
     } else {
         std::vector <std::string> l = m_img[x][y].getList();
-                return (lenCurve(x + mappingX(l[0]), y + mappingY(l[0])) +
+        return (lenCurve(x + mappingX(l[0]), y + mappingY(l[0])) +
                 lenCurve(x + mappingX(l[1]), y + mappingY(l[1])) + 2);
     }
 
