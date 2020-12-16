@@ -318,7 +318,13 @@ void Image::hueristicsTaversal() {
                     w_lr += 0;
                     w_rl += 0;
                 }
-                //TODO: island heuristics
+                //island heuristics
+                if(m_img[i][j].valency() == 1 || m_img[i+1][j+1].valency() == 1){
+                    w_lr += 5;
+                }
+                if(m_img[i+1][j].valency() == 1 || m_img[i][j+1].valency() == 1){
+                    w_rl += 5;
+                }
 
                 if (w_lr > w_rl) {
                     m_img[i + 1][j].adjacencyList.find("topRight")->second = false;
