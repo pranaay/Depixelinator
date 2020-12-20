@@ -25,7 +25,6 @@ int main(int, char *argv[]) {
     pepe.hueristicsTaversal();
     pepe.createVbo();
     pepe.createIbo();
-
     // Create VBOs, VAOs
     const GLfloat vertexdata[] = {
             -0.5f, -0.5f, 0.0f, 0.0f,
@@ -91,6 +90,10 @@ int main(int, char *argv[]) {
 
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, pepe.getIbo());
         glDrawElements(GL_LINES, pepe.getNumConn(), GL_UNSIGNED_INT, (void *) 0);
+//        glBindBuffer(GL_ARRAY_BUFFER, graphPoints);
+//        glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, sizeof(float) * 4, (void *) 0);
+//        glEnableVertexAttribArray(0);
+//        glDrawArrays(GL_POINTS, 0, 12);
 
         glUseProgram(0);
 

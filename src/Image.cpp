@@ -7,7 +7,7 @@
 #include "Pixels.h"
 #include <vector>
 #include<bits/stdc++.h>
-
+#include "utils.h"
 #include<iostream>
 
 Image::Image(const char *filename, unsigned int slot) {
@@ -181,6 +181,8 @@ void Image::createVbo() {
         for (int j = 0; j < m_Width; j++) {
             vertexData[i * m_Width * 2 + j * 2] = (-0.85 + (1.7 / std::max(m_Height, m_Width)) * j);
             vertexData[i * m_Width * 2 + j * 2 + 1] = -0.85 + (1.7 / std::max(m_Height, m_Width)) * i;
+            m_img[i][j].setX(vertexData[i * m_Width * 2 + j * 2]);
+            m_img[i][j].setY(vertexData[i * m_Width * 2 + j * 2 + 1]);
         }
     }
     glGenBuffers(1, &VBO);
@@ -253,16 +255,16 @@ void Image::hueristicsTaversal() {
                 !m_img[i][j].adjacencyList.find("right")->second &&
                 !m_img[i + 1][j].adjacencyList.find("right")->second &&
                 !m_img[i][j + 1].adjacencyList.find("bottom")->second) {
-                std::cerr << "working here" << i << " " << j << std::endl;
+                //std::cerr << "working here" << i << " " << j << std::endl;
                 int w_lr = 0, w_rl = 0;
                 //Curves heuristic
 
                 resetVisited();
                 int len_lr = lenCurve(i, j);
-                std::cerr << len_lr << " len_lr ";
+                //std::cerr << len_lr << " len_lr ";
                 resetVisited();
                 int len_rl = lenCurve(i + 1, j);
-                std::cerr << len_rl << " len_rl" << std::endl;
+                //std::cerr << len_rl << " len_rl" << std::endl;
                 if (len_lr > len_rl) {
                     w_lr = len_lr - len_rl;
                     w_rl = 0;
@@ -319,13 +321,13 @@ void Image::hueristicsTaversal() {
                     w_rl += 0;
                 }
                 //island heuristics
-                if(m_img[i][j].valency() == 1 || m_img[i+1][j+1].valency() == 1){
+                if (m_img[i][j].valency() == 1 || m_img[i + 1][j + 1].valency() == 1) {
                     w_lr += 5;
                 }
-                if(m_img[i+1][j].valency() == 1 || m_img[i][j+1].valency() == 1){
+                if (m_img[i + 1][j].valency() == 1 || m_img[i][j + 1].valency() == 1) {
                     w_rl += 5;
                 }
-
+                //final evaluation
                 if (w_lr > w_rl) {
                     m_img[i + 1][j].adjacencyList.find("topRight")->second = false;
                     m_img[i][j + 1].adjacencyList.find("bottomLeft")->second = false;
@@ -349,8 +351,12 @@ int Image::lenCurve(int x, int y) {
     if (x >= m_Height || y >= m_Width) return -1;
     if (visited[x][y] == 1) return -1;
     visited[x][y] = 1;
-    if (m_img[x][y].valency() != 2) {
+    if (m_img[x][y].valency() != 2 && m_img[x][y].valency() != 1) {
         return 0;
+    } else if (m_img[x][y].valency() == 1) {
+        std::vector <std::string> l = m_img[x][y].getList();
+        return (lenCurve(x + mappingX(l[0]), y + mappingY(l[0])) + 1);
+
     } else {
         std::vector <std::string> l = m_img[x][y].getList();
         return (lenCurve(x + mappingX(l[0]), y + mappingY(l[0])) +
@@ -387,4 +393,132 @@ void Image::resetVisited() {
         visited[ii] = new int[m_Width];
         memset(visited[ii], 0, m_Width * sizeof(int));
     }
+}
+
+void Image::render() {
+    resetVisited();
+    for (int i = 0; i < m_Height; i++) {
+        for (int j = 0; j < m_Width; j++) {
+            if (!visited[i][j]) {
+                if (m_img[i][j].valency() == 1) {
+
+                }
+            }
+        }
+    }
+}
+
+unsigned int Image::fitCurve(std::vector<float> points) {
+
+    std::vector<float> bezier;
+    std::vector<float> ax, ay;
+    std::vector<float> bx, by;
+
+    int sz = points.size() / 3;
+    float x[4] = {0}, y[4] = {0};
+    float delta_t = 1.0 / (50 - 1.0);
+    float t;
+    if (sz == 0) {
+        return;
+    } else if (sz == 1) {
+        bezier.push_back(points[0]);
+        bezier.push_back(points[1]);
+        bezier.push_back(0.0);
+        return;
+    } else if (sz == 2) {
+        bezier.push_back(points[0]);
+        bezier.push_back(points[1]);
+        bezier.push_back(0.0);
+        bezier.push_back(points[3]);
+        bezier.push_back(points[4]);
+        bezier.push_back(0.0);
+        return;
+    } else {
+        ax = thomasAlgo(points, 0);
+        ay = thomasAlgo(points, 1);
+        bx = getB(points, ax, 0);
+        by = getB(points, ay, 1);
+    }
+
+
+    for (int i = 0; i < (sz - 1); i += 1) {
+
+        x[0] = points[i * 3];
+        y[0] = points[i * 3 + 1];
+        x[1] = ax[i + 1];
+        y[1] = ay[i + 1];
+        x[2] = bx[i + 1];
+        y[2] = by[i + 1];
+        x[3] = points[i * 3 + 3];
+        y[3] = points[i * 3 + 4];
+
+        bezier.push_back(x[0]);
+        bezier.push_back(y[0]);
+        bezier.push_back(0.0);
+
+        t = 0.0;
+        for (float j = 1; j < (50 - 1); j++) {
+            t += delta_t;
+            bezier.push_back(x[0] * pow((1 - t), 3) + 3 * x[1] * pow((1 - t), 2) * t + 3 * x[2] * pow(t, 2) * (1 - t) +
+                             x[3] * pow(t, 3));
+            bezier.push_back(y[0] * pow((1 - t), 3) + 3 * y[1] * pow((1 - t), 2) * t + 3 * y[2] * pow(t, 2) * (1 - t) +
+                             y[3] * pow(t, 3));
+            bezier.push_back(0.0);
+        }
+    }
+    bezier.push_back(x[3]);
+    bezier.push_back(y[3]);
+    bezier.push_back(0.0);
+    unsigned int bez;
+    glGenBuffers(1, &bez);
+    glBindBuffer(GL_ARRAY_BUFFER, bez);
+    glBufferData(GL_ARRAY_BUFFER, bezier.size() * sizeof(float), &bezier[0], GL_DYNAMIC_DRAW);
+    glBindBuffer(0);
+    return bez;
+}
+
+std::vector<float> Image::thomasAlgo(std::vector<float> &points, int flag) {
+    float W;
+    int sz = points.size() / 3;
+    std::vector<float> ans(sz), ai, bi, ci, di; //All are one-indexed
+
+    di.push_back(0);
+    di.push_back(points[0 + flag] + 2 * points[3 + flag]);
+    for (int i = 1; i < sz - 2; i++) {
+        di.push_back(2 * (2 * points[3 * i + flag] + points[3 * (i + 1) + flag]));
+    }
+    di.push_back(8 * points[3 * (sz - 2) + flag] + points[3 * (sz - 1) + flag]);
+
+    ai.push_back(0);
+    ai.push_back(0);
+    for (int i = 1; i < sz - 2; i++) {
+        ai.push_back(1);
+    }
+    ai.push_back(2);
+
+    bi.push_back(0);
+    bi.push_back(2);
+    for (int i = 1; i < sz - 2; i++) {
+        bi.push_back(4);
+    }
+    bi.push_back(7);
+
+    ci.push_back(0);
+    for (int i = 0; i < sz; i++) {
+        ci.push_back(1);
+    }
+
+    for (int i = 2; i <= sz - 1; i++) {
+        W = ai[i] / bi[i - 1];
+        bi[i] = bi[i] - W * ci[i - 1];
+        di[i] = (di[i] - W * di[i - 1]);
+
+    }
+    ans[sz - 1] = di[sz - 1] / bi[sz - 1];
+    for (int i = sz - 2; i >= 1; i--) {
+        ans[i] = (di[i] - ci[i] * ans[i + 1]) / bi[i];
+    }
+    return ans;
+
+
 }

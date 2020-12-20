@@ -62,12 +62,13 @@ int Pixels::valency() {
     return sum;
 }
 
-std::vector<std::string> Pixels::getList() {
+std::vector <std::string> Pixels::getList() {
     std::map<std::string, bool>::iterator itr = adjacencyList.begin();
-    std::vector<std::string> rett;
-    while (itr != adjacencyList.end()){
-        if(itr-> second) rett.push_back(itr->first);
+    std::vector <std::string> rett;
+    while (itr != adjacencyList.end()) {
+        if (itr->second) rett.push_back(itr->first);
         itr++;
     }
     return rett;
 }
+

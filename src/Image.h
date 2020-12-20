@@ -35,6 +35,8 @@ public:
 
     void createIbo();
 
+    void render();
+
     int getNumConn() const;
 
     void setNumConn(int numConn);
@@ -48,6 +50,10 @@ public:
     int mappingY(std::string x);
 
     void resetVisited();
+
+    unsigned int fitCurve(std::vector<float> points);
+
+    std::vector<float> thomasAlgo(std::vector<float> &points, int flag)
 
 private:
     int m_Height;
