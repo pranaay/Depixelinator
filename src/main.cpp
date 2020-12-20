@@ -18,7 +18,7 @@ int main(int, char *argv[]) {
     unsigned int shaderProgram = createProgram("./shaders/vshader.vs", "./shaders/fshader.fs");
     glUseProgram(shaderProgram);
 
-    Image pepe = Image("./PixelArtImages/smw_boo_input.png", 0);
+    Image pepe = Image("./PixelArtImages/smw2_yoshi_01_input.png", 0);
     std::cout << "height : " << pepe.getHeight() << " width : " << pepe.getWidth() << std::endl;
     glBindTexture(GL_TEXTURE_2D, pepe.getTexId());
     pepe.createSimilarityGraph();

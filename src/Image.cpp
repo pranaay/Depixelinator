@@ -419,12 +419,12 @@ unsigned int Image::fitCurve(std::vector<float> points) {
     float delta_t = 1.0 / (50 - 1.0);
     float t;
     if (sz == 0) {
-        return;
+        return 0;
     } else if (sz == 1) {
         bezier.push_back(points[0]);
         bezier.push_back(points[1]);
         bezier.push_back(0.0);
-        return;
+        return 0;
     } else if (sz == 2) {
         bezier.push_back(points[0]);
         bezier.push_back(points[1]);
@@ -432,7 +432,7 @@ unsigned int Image::fitCurve(std::vector<float> points) {
         bezier.push_back(points[3]);
         bezier.push_back(points[4]);
         bezier.push_back(0.0);
-        return;
+        return 0;
     } else {
         ax = thomasAlgo(points, 0);
         ay = thomasAlgo(points, 1);
@@ -473,7 +473,7 @@ unsigned int Image::fitCurve(std::vector<float> points) {
     glGenBuffers(1, &bez);
     glBindBuffer(GL_ARRAY_BUFFER, bez);
     glBufferData(GL_ARRAY_BUFFER, bezier.size() * sizeof(float), &bezier[0], GL_DYNAMIC_DRAW);
-    glBindBuffer(0);
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
     return bez;
 }
 
@@ -521,4 +521,16 @@ std::vector<float> Image::thomasAlgo(std::vector<float> &points, int flag) {
     return ans;
 
 
+}
+
+std::vector<float> Image::getB(std::vector<float> &points, std::vector<float> &ai, int flag) {
+    int sz = points.size() / 3;
+    std::vector<float> b;
+    b.push_back(0);
+    for (int i = 0; i < sz - 2; i++) {
+        b.push_back(2 * points[3 * (i + 1) + flag] - ai[i + 2]);
+    }
+    b.push_back((ai[sz - 1] + points[3 * (sz - 1) + flag]) / 2);
+
+    return b;
 }

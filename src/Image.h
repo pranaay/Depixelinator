@@ -53,7 +53,9 @@ public:
 
     unsigned int fitCurve(std::vector<float> points);
 
-    std::vector<float> thomasAlgo(std::vector<float> &points, int flag)
+    std::vector<float> thomasAlgo(std::vector<float> &points, int flag);
+
+    std::vector<float> getB(std::vector<float> &points, std::vector<float> &ai, int flag);
 
 private:
     int m_Height;
